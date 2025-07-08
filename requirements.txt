@@ -6,13 +6,8 @@ faiss-cpu
 pypdf
 langchain_groq
 langchain_google_genai
-tavily-python
-serper
-google-generativeai
 python-dotenv
 langchain-community
-fastapi
-uvicorn
 httpx
 Flask
 flask-cors
