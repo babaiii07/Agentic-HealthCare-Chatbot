@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediChat AI - Healthcare Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        accent: '#F59E0B'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+        }
+        .message-enter {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+        }
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: #4F46E5;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0);
+                opacity: 0.5;
+            }  
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .glow-shadow {
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 overflow-hidden -z-10">
+        <div class="absolute top-20 left-10 w-40 h-40 rounded-full bg-purple-200 opacity-20 blur-3xl animate-float"></div>
+        <div class="absolute bottom-10 right-20 w-60 h-60 rounded-full bg-emerald-200 opacity-20 blur-3xl animate-float animation-delay-2000"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div class="flex items-center mb-4 md:mb-0">
+                <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center mr-4 glow-shadow">
+                    <i class="fas fa-heartbeat text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-dark">MediChat AI</h1>
+                    <p class="text-sm text-gray-500">Your 24/7 Healthcare Companion</p>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button class="px-4 py-2 bg-white rounded-full text-sm font-medium border border-gray-200 hover:bg-primary hover:text-white transition flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i> About
+                </button>
+                <button class="px-4 py-2 bg-white rounded-full text-sm font-medium border border-gray-200 hover:bg-gray-50 transition flex items-center">
+                    <i class="fas fa-cog text-primary mr-2"></i> Settings
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Chat Container -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[70vh]">
+            <!-- Chat Header -->
+            <div class="gradient-bg py-4 px-6 flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-robot text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-white">Dr. AI Assistant</h2>
+                        <p class="text-xs text-white opacity-80">Online - Agentic AI System</p>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition">
+                        <i class="fas fa-phone-alt text-xs"></i>
+                    </button>
+                    <button class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition">
+                        <i class="fas fa-video text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50" id="chat-messages">
+                <!-- Welcome message -->
+                <div class="flex justify-start">
+                    <div class="message-enter max-w-xs md:max-w-md lg:max-w-lg bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100">
+                        <div class="flex items-center mb-2">
+                            <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center mr-2">
+                                <i class="fas fa-robot text-white text-xs"></i>
+                            </div>
+                            <span class="text-sm font-medium text-dark">Dr. AI Assistant</span>
+                        </div>
+                        <p class="text-gray-700">Hello! I'm your healthcare AI assistant. I can help with symptom checking, medication information, finding doctors, and general health advice. How can I assist you today?</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button class="quick-btn px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs transition" data-query="What are common flu symptoms?">Flu symptoms</button>
+                            <button class="quick-btn px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs transition" data-query="How to manage stress and anxiety?">Stress relief</button>
+                            <button class="quick-btn px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs transition" data-query="Find a cardiologist near me">Find doctor</button>
+                            <button class="quick-btn px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs transition" data-query="Side effects of ibuprofen">Medication info</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing indicator (hidden by default) -->
+            <div id="typing-indicator" class="hidden px-6 pb-4">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-robot text-white text-xs"></i>
+                    </div>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4 bg-white">
+                <form id="chat-form" class="flex items-center space-x-2">
+                    <div class="flex-1 relative">
+                        <input type="text" id="message-input" 
+                               class="w-full py-3 px-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition pl-12" 
+                               placeholder="Ask me anything about health..." 
+                               autocomplete="off">
+                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="far fa-comment-dots"></i>
+                        </div>
+                    </div>
+                    <button type="submit" 
+                            class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white hover:bg-opacity-90 transition glow-shadow">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="mt-3 flex items-center justify-center text-xs text-gray-400">
+                    <i class="fas fa-lock mr-1"></i>
+                    <span>Your conversations are private and secure</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-user-md text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-dark mb-2">Symptom Checker</h3>
+                <p class="text-gray-600">Get potential causes for your symptoms and recommended next steps.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-pills text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-dark mb-2">Medication Guide</h3>
+                <p class="text-gray-600">Learn about drug interactions, side effects, and proper usage.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-calendar-check text-white"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-dark mb-2">Appointment Booking</h3>
+                <p class="text-gray-600">Find and book appointments with healthcare providers near you.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="gradient-bg p-6 rounded-t-2xl flex justify-between items-center sticky top-0 z-10">
+                <h2 class="text-xl font-bold text-white">About MediChat AI</h2>
+                <button id="close-modal" class="text-white hover:text-gray-200 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex items-start">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-heartbeat text-primary text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-dark mb-1">Welcome to MediChat AI</h3>
+                        <p class="text-gray-600">Your intelligent healthcare companion powered by AI</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <h4 class="font-medium text-dark mb-2 flex items-center">
+                            <i class="fas fa-lightbulb text-accent mr-2"></i> Our Vision
+                        </h4>
+                        <p class="text-gray-600 text-sm">To make healthcare more accessible by providing reliable medical information anytime, anywhere through conversational AI.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <h4 class="font-medium text-dark mb-2 flex items-center">
+                            <i class="fas fa-bullseye text-accent mr-2"></i> Our Mission
+                        </h4>
+                        <p class="text-gray-600 text-sm">Empower individuals to make informed health decisions by providing accurate, personalized medical guidance at scale.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="font-medium text-dark border-b pb-2">Key Features</h4>
+                    <ul class="space-y-3 pl-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-secondary mt-1 mr-2 text-sm"></i>
+                            <span class="text-gray-600">24/7 personalized health advice</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-secondary mt-1 mr-2 text-sm"></i>
+                            <span class="text-gray-600">Symptom checker with possible causes</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-secondary mt-1 mr-2 text-sm"></i>
+                            <span class="text-gray-600">Medication and treatment information</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-secondary mt-1 mr-2 text-sm"></i>
+                            <span class="text-gray-600">Doctor finder and appointment booking</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-secondary mt-1 mr-2 text-sm"></i>
+                            <span class="text-gray-600">Secure and private conversations</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-4">
+                    <h4 class="font-medium text-dark border-b pb-2">Disclaimer</h4>
+                    <p class="text-gray-600 text-sm mt-2">
+                        MediChat AI provides general health information and is not a substitute for professional medical advice,
+                        diagnosis or treatment. Always seek the advice of your physician or other qualified health provider with
+                        any questions you may have regarding a medical condition.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const typingIndicator = document.getElementById('typing-indicator');
+            
+            // About modal functionality
+            const aboutModal = document.getElementById('about-modal');
+            const aboutButton = document.querySelector('button:has(.fa-info-circle)');
+            const closeModal = document.getElementById('close-modal');
+            
+            aboutButton.addEventListener('click', () => {
+                aboutModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeModal.addEventListener('click', () => {
+                aboutModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            // Close when clicking outside modal content
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) {
+                    aboutModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Quick reply buttons
+            document.querySelectorAll('.quick-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    messageInput.value = this.getAttribute('data-query');
+                    messageInput.focus();
+                });
+            });
+
+            // Form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                
+                if (message) {
+                    // Add user message
+                    addMessage(message, 'user');
+                    messageInput.value = '';
+                    
+                    // Show typing indicator
+                    typingIndicator.classList.remove('hidden');
+
+                    // Send message to backend
+                    fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        typingIndicator.classList.add('hidden');
+                        addMessage(data.response || 'Sorry, something went wrong.', 'ai');
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    })
+                    .catch(() => {
+                        typingIndicator.classList.add('hidden');
+                        addMessage('Sorry, there was a problem connecting to the server.', 'ai');
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('flex', 'message-enter');
+                
+                if (sender === 'user') {
+                    messageDiv.classList.add('justify-end');
+                    messageDiv.innerHTML = `
+                        <div class="max-w-xs md:max-w-md lg:max-w-lg bg-primary text-white p-4 rounded-xl rounded-tr-none shadow-sm">
+                            <p>${text}</p>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.classList.add('justify-start');
+                    messageDiv.innerHTML = `
+                        <div class="max-w-xs md:max-w-md lg:max-w-lg bg-white p-4 rounded-xl rounded-tl-none shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center mr-2">
+                                    <i class="fas fa-robot text-white text-xs"></i>
+                                </div>
+                                <span class="text-sm font-medium text-dark">Dr. AI Assistant</span>
+                            </div>
+                            <p class="text-gray-700">${text}</p>
+                        </div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
