@@ -4,7 +4,6 @@ streamlit
 chromadb
 faiss-cpu
 pypdf
-groq
 langgchain_groq
 langchain_google_genai
 tavily-python
@@ -15,6 +14,5 @@ langchain-community
 fastapi
 uvicorn
 httpx
-sentence-transformers
 Flask
-flask-cors 
+flask-cors
