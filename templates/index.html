@@ -3,57 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MediChat AI - Healthcare Chatbot</title>
+  <title>HealthMate AI - Your Wellness Partner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; }
-  
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #fdf4ff 0%, #e0f2fe 100%);
+      background: linear-gradient(135deg, #ecfeff 0%, #f5f3ff 100%);
       background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+      animation: gradientShift 20s ease infinite;
       overflow-x: hidden;
     }
 
     @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
+      0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
     }
 
-    .chat-scrollbar::-webkit-scrollbar { width: 8px; }
+    .chat-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+
     .chat-scrollbar::-webkit-scrollbar-thumb {
-      background: #c4b5fd;
-      border-radius: 8px;
+      background: #c084fc;
+      border-radius: 10px;
     }
 
     .bubble a {
-      color: #6366f1;
+      color: #7c3aed;
       text-decoration: underline;
       word-break: break-word;
     }
 
-    .bubble { white-space: pre-line; }
-
-    .typing-dots {
-      display: inline-flex;
-      gap: 4px;
-      align-items: center;
-      justify-content: center;
+    .bubble {
+      white-space: pre-line;
     }
 
     .typing-dot {
       width: 8px;
       height: 8px;
-      background-color: #7c3aed;
+      background-color: #a855f7;
       border-radius: 50%;
       animation: blinkDot 1.2s infinite ease-in-out;
     }
 
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
     @keyframes blinkDot {
       0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
@@ -65,113 +72,108 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      animation: floatParticle 10s linear infinite;
+      background: rgba(255, 255, 255, 0.1);
+      animation: floatParticle 15s linear infinite;
       z-index: -10;
     }
 
     @keyframes floatParticle {
-      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      0% { transform: translateY(100vh); opacity: 0; }
       10% { opacity: 1; }
-      100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    #chat-messages {
+      flex-grow: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-bottom: 1rem;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col" style="background: linear-gradient(135deg, #fdf4ff 0%, #ecfdf5 100%);">
+<body class="flex flex-col min-h-screen">
+  <!-- Floating Background Dots -->
   <div class="pointer-events-none fixed inset-0 -z-10">
-    <div class="absolute top-[-80px] left-[-80px] w-[320px] h-[320px] bg-purple-300/30 rounded-full blur-3xl opacity-70 animate-float"></div>
-    <div class="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-pink-200/30 rounded-full blur-3xl opacity-60 animate-float2"></div>
-    <div class="absolute top-1/2 left-1/2 w-[180px] h-[180px] bg-indigo-200/40 rounded-full blur-2xl opacity-50 animate-float3"></div>
+    <div class="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-pink-300/20 rounded-full blur-3xl opacity-70 animate-pulse"></div>
+    <div class="absolute bottom-[-100px] right-[-120px] w-[400px] h-[400px] bg-purple-200/30 rounded-full blur-3xl opacity-60 animate-ping"></div>
+    <div class="absolute top-1/3 left-1/2 w-[200px] h-[200px] bg-indigo-100/40 rounded-full blur-2xl opacity-50 animate-spin-slow"></div>
   </div>
 
-  <header class="w-full flex items-center justify-between px-6 py-4 bg-white shadow-md z-20">
-    <div class="flex items-center gap-3">
-      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center shadow">
-        <i class="fas fa-heartbeat text-white text-2xl"></i>
+  <!-- Header -->
+  <header class="w-full px-6 py-4 bg-white/80 backdrop-blur-md shadow-md flex items-center justify-between z-20">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+        <i class="fas fa-stethoscope text-white text-xl"></i>
       </div>
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">MediChat AI</h1>
-        <p class="text-xs text-gray-500">Your 24/7 Healthcare Companion</p>
+        <h1 class="text-2xl font-extrabold text-indigo-700">HealthMate AI</h1>
+        <p class="text-sm text-gray-600 italic">Your 24/7 Wellness Partner</p>
       </div>
     </div>
-    <button id="about-toggle" class="px-4 py-2 bg-blue-700 text-white rounded-full font-medium shadow hover:bg-blue-800 transition flex items-center">
+    <button id="about-toggle" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-full shadow hover:scale-105 transition flex items-center">
       <i class="fas fa-info-circle mr-2"></i> About
     </button>
   </header>
 
-  <main class="flex-1 flex flex-col max-w-6xl mx-auto w-full h-[calc(100vh-80px)] min-h-0 overflow-hidden">
-    <div id="about-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40">
-      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fadeIn">
-        <button id="close-about" class="absolute top-4 right-4 text-gray-400 hover:text-purple-500 text-2xl"><i class="fas fa-times"></i></button>
-        <h2 class="text-2xl font-bold mb-2 text-gray-800">About MediChat AI</h2>
-        <p class="text-gray-700 mb-4">MediChat AI is your intelligent healthcare companion, available 24/7 to provide reliable medical information, symptom analysis, medication guidance, and more.</p>
-        <ul class="mb-4 space-y-2">
-          <li class="flex items-center"><i class="fas fa-check-circle text-purple-500 mr-2"></i> Symptom checker with possible causes</li>
-          <li class="flex items-center"><i class="fas fa-check-circle text-purple-500 mr-2"></i> Medication and treatment information</li>
-          <li class="flex items-center"><i class="fas fa-check-circle text-purple-500 mr-2"></i> Doctor finder and appointment booking (coming soon)</li>
-          <li class="flex items-center"><i class="fas fa-check-circle text-purple-500 mr-2"></i> Secure and private conversations</li>
+  <!-- Main Chat Area -->
+  <main class="flex flex-col max-w-5xl mx-auto w-full h-[calc(100vh-80px)] overflow-hidden">
+    <!-- About Modal -->
+    <div id="about-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 relative animate-fadeIn">
+        <button id="close-about" class="absolute top-4 right-4 text-gray-400 hover:text-purple-600 text-2xl">
+          <i class="fas fa-times-circle"></i>
+        </button>
+        <h2 class="text-2xl font-bold mb-3 text-indigo-700">About HealthMate AI</h2>
+        <p class="text-gray-700 mb-4">HealthMate AI is your smart healthcare assistant—available anytime to help analyze symptoms, recommend remedies, provide medication details, and more.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+          <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i> Intelligent symptom checker</li>
+          <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i> Medication and treatment guidance</li>
+          <li class="flex items-center"><i class="fas fa-check text-purple-500 mr-2"></i> Privacy-first chat system</li>
         </ul>
         <div class="flex items-center gap-4 mt-2">
-          <a href="https://github.com/Babaiii07" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-800 transition shadow group" title="GitHub">
-            <i class="fab fa-github text-xl text-gray-700 group-hover:text-white"></i>
+          <a href="https://github.com/Babaiii07" target="_blank" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-black transition">
+            <i class="fab fa-github text-gray-700 hover:text-white"></i>
           </a>
-          <a href="https://www.linkedin.com/in/parthib-karak-9a0bb1286/" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-700 transition shadow group" title="LinkedIn">
-            <i class="fab fa-linkedin-in text-xl text-blue-700 group-hover:text-white"></i>
+          <a href="https://www.linkedin.com/in/parthib-karak-9a0bb1286/" target="_blank" class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-700 transition">
+            <i class="fab fa-linkedin-in text-blue-700 hover:text-white"></i>
           </a>
-          <span class="ml-2 text-sm text-gray-500">by <span class="font-semibold text-purple-600">Parthib Karak</span></span>
+          <span class="text-sm text-gray-500 ml-2">Created by <span class="font-semibold text-purple-600">Parthib Karak</span></span>
         </div>
-        <img src="https://kms-healthcare.com/wp-content/uploads/2023/10/ai-chatbots-in-healthcare-1-1024x575.png" alt="Healthcare AI" class="w-40 h-40 object-contain rounded-xl shadow-md bg-white mt-8 mx-auto"/>
       </div>
     </div>
 
-    <section class="flex-1 flex flex-col h-full min-h-0 overflow-hidden">
-      <div id="chat-messages" class="flex-1 overflow-y-auto p-6 chat-scrollbar flex flex-col gap-2 min-h-0 w-full"></div>
-      <div class="w-full bg-white/80 border-t border-gray-200 p-4 sticky bottom-0 z-10">
-        <form id="chat-form" class="flex items-end gap-2">
-          <div class="flex-1 relative">
-            <textarea id="message-input" rows="1" class="w-full py-3 px-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-transparent transition pl-12 resize-none bg-white" placeholder="Type your message..." autocomplete="off"></textarea>
+    <!-- Chat Section -->
+    <section class="flex flex-col flex-grow min-h-0 overflow-hidden">
+      <div id="chat-messages" class="chat-scrollbar flex flex-col gap-2 w-full px-6 py-4"></div>
+      <div class="w-full bg-white/90 backdrop-blur border-t border-gray-200 p-4 sticky bottom-0 z-10">
+        <form id="chat-form" class="flex items-center gap-3">
+          <div class="relative flex-1">
+            <textarea id="message-input" rows="1" placeholder="Ask something..." class="w-full py-3 px-4 pr-12 pl-12 border border-gray-200 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"></textarea>
             <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-              <i class="far fa-comment-dots"></i>
+              <i class="fas fa-comments"></i>
             </div>
           </div>
-          <button type="submit" class="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center text-white hover:bg-blue-800 transition shadow-lg">
+          <button type="submit" class="w-12 h-12 bg-purple-600 text-white rounded-full shadow-md hover:bg-purple-700 transition">
             <i class="fas fa-paper-plane"></i>
           </button>
         </form>
-        <div class="mt-2 flex items-center justify-center text-xs text-gray-400">
-          <i class="fas fa-lock mr-1"></i>
-          <span>Your conversations are private and secure</span>
-        </div>
       </div>
     </section>
   </main>
 
+  <!-- Script Section -->
   <script>
     const aboutToggle = document.getElementById('about-toggle');
     const aboutModal = document.getElementById('about-modal');
     const closeAbout = document.getElementById('close-about');
-
-    aboutToggle.addEventListener('click', () => {
-      aboutModal.classList.remove('hidden');
-      aboutModal.classList.add('flex');
-    });
-
-    closeAbout.addEventListener('click', () => {
-      aboutModal.classList.add('hidden');
-      aboutModal.classList.remove('flex');
-    });
-
-    aboutModal.addEventListener('click', (e) => {
-      if (e.target === aboutModal) {
-        aboutModal.classList.add('hidden');
-        aboutModal.classList.remove('flex');
-      }
-    });
-
     const chatForm = document.getElementById('chat-form');
     const messageInput = document.getElementById('message-input');
     const chatMessages = document.getElementById('chat-messages');
     let isAITyping = false;
+
+    aboutToggle.onclick = () => aboutModal.classList.replace('hidden', 'flex');
+    closeAbout.onclick = () => aboutModal.classList.replace('flex', 'hidden');
+    aboutModal.onclick = (e) => { if (e.target === aboutModal) aboutModal.classList.replace('flex', 'hidden'); }
 
     messageInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -181,86 +183,70 @@
     });
 
     messageInput.addEventListener('input', function() {
-      this.style.height = '44px';
+      this.style.height = 'auto';
       this.style.height = (this.scrollHeight) + 'px';
     });
 
-    function linkify(inputText) {
-      const urlPattern = /(https?:\/\/[\w\-\.\/?#&=;%+~:@!$'()*\[\],]+)/gi;
-      return inputText.replace(urlPattern, function(url) {
-        let displayUrl = url.length > 50 ? url.slice(0, 47) + '...' : url;
-        return `<a href="${url}" target="_blank" rel="noopener">${displayUrl}</a>`;
-      });
+    function linkify(text) {
+      return text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
     }
 
     function addMessage(text, sender, typing = false) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('flex', 'items-end', 'gap-2', sender === 'user' ? 'justify-end' : 'justify-start');
-      let avatar = `<div class="w-9 h-9 rounded-full flex items-center justify-center ${sender === 'user' ? 'bg-blue-700 text-white' : 'bg-indigo-300 text-white'} shadow"><i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i></div>`;
-      let bubble = `<div class="bubble px-5 py-3 rounded-2xl shadow ${sender === 'user' ? 'bg-blue-700 text-white rounded-br-md' : 'bg-white text-gray-900 border border-gray-200 rounded-bl-md'} break-words max-w-[80%]">${linkify(text)}</div>`;
-
-      if (typing) {
-        bubble = `<div class="bubble px-5 py-3 rounded-2xl shadow bg-white text-gray-900 border border-gray-200 rounded-bl-md break-words max-w-[80%]"><span id='ai-typing'></span><span class='typing-cursor'></span></div>`;
-      }
-
-      messageDiv.innerHTML = sender === 'user' ? (bubble + avatar) : (avatar + bubble);
-      chatMessages.appendChild(messageDiv);
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `flex items-end gap-2 ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+      const avatar = `<div class="w-9 h-9 rounded-full flex items-center justify-center ${sender === 'user' ? 'bg-purple-600' : 'bg-indigo-300'} text-white shadow"><i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i></div>`;
+      let bubble = `<div class="bubble px-5 py-3 rounded-2xl shadow ${sender === 'user' ? 'bg-purple-600 text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-900 rounded-bl-none'} max-w-[80%]">${linkify(text)}</div>`;
+      if (typing) bubble = `<div class="bubble px-5 py-3 bg-white border border-gray-200 rounded-2xl shadow max-w-[80%]"><span id="ai-typing"></span></div>`;
+      msgDiv.innerHTML = sender === 'user' ? (bubble + avatar) : (avatar + bubble);
+      chatMessages.appendChild(msgDiv);
       chatMessages.scrollTop = chatMessages.scrollHeight;
-      return messageDiv;
+      return msgDiv;
     }
 
     async function aiTypingEffect(fullText) {
       isAITyping = true;
-      const lastMsg = document.getElementById('ai-typing');
+      const typingSpan = document.getElementById('ai-typing');
       let i = 0;
-      function typeChar() {
-        if (!lastMsg) return;
-        lastMsg.innerHTML = linkify(fullText.slice(0, i));
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        if (i < fullText.length) {
-          i++;
-          setTimeout(typeChar, 12 + Math.random() * 30);
+      function type() {
+        if (i <= fullText.length) {
+          typingSpan.innerHTML = linkify(fullText.slice(0, i++));
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          setTimeout(type, 15 + Math.random() * 25);
         } else {
           isAITyping = false;
         }
       }
-      typeChar();
+      type();
     }
 
-    chatForm.addEventListener('submit', function(e) {
+    chatForm.onsubmit = (e) => {
       e.preventDefault();
-      const message = messageInput.value.trim();
-      if (message && !isAITyping) {
-        addMessage(message, 'user');
-        messageInput.value = '';
-        messageInput.style.height = '44px';
-        const aiMsgDiv = addMessage('', 'ai', true);
-        fetch('/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message })
-        })
-        .then(response => response.json())
-        .then(data => {
-          aiTypingEffect(data.response || 'Sorry, something went wrong.');
-        })
-        .catch(() => {
-          aiTypingEffect('Sorry, there was a problem connecting to the server.');
-        });
+      const msg = messageInput.value.trim();
+      if (!msg || isAITyping) return;
+      addMessage(msg, 'user');
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      addMessage('', 'ai', true);
+      fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      })
+      .then(res => res.json())
+      .then(data => aiTypingEffect(data.response || 'Sorry, something went wrong.'))
+      .catch(() => aiTypingEffect('Sorry, server not responding.'));
+    }
+
+    window.onload = () => {
+      addMessage("👋 Welcome to HealthMate AI! I'm here to support your health. What would you like to ask today?", 'ai');
+      for (let i = 0; i < 20; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'floating-dot';
+        dot.style.left = `${Math.random() * 100}vw`;
+        dot.style.animationDuration = `${10 + Math.random() * 5}s`;
+        dot.style.animationDelay = `${Math.random() * 3}s`;
+        document.body.appendChild(dot);
       }
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      addMessage("Hello! I'm your healthcare AI assistant. How can I help you today?", 'ai');
-    });
-
-    for (let i = 0; i < 20; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'floating-dot';
-      dot.style.left = `${Math.random() * 100}vw`;
-      dot.style.animationDuration = `${8 + Math.random() * 5}s`;
-      dot.style.animationDelay = `${Math.random() * 5}s`;
-      document.body.appendChild(dot);
     }
   </script>
 </body>

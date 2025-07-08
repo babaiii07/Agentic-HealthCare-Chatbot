@@ -4,7 +4,7 @@ streamlit
 chromadb
 faiss-cpu
 pypdf
-langgchain_groq
+langchain_groq
 langchain_google_genai
 tavily-python
 serper
