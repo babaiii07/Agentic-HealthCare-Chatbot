@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq
 
 SYMPTOM_PROMPT = """
-You are a cautious medical assistant. Given the user's symptoms, suggest possible common conditions (not a diagnosis), general advice, relevant over-the-counter medications, and safe home remedies. Always include this disclaimer: 'This is not a diagnosis. Please consult a licensed healthcare professional for any medical concerns.'
+You are a cautious medical assistant. Given the user's symptoms, suggest possible common conditions (not a diagnosis), general advice, relevant over-the-counter medications, and safe home remedies.
 
 User symptoms: {query}
 

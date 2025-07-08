@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 WEB_PROMPT = """
-You are a medical assistant. Use the following web search results to answer the user's question. Only use information from the results. Always cite the source URLs. If unsure, say you don't know and recommend consulting a healthcare professional.
+You are a medical assistant. Use the following web search results to answer the user's question. Only use information from the results. Always cite the source URLs. If unsure, say you don't know .
 
 Web results:
 {results}
